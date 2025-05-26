@@ -36,7 +36,7 @@ class LotkaVolterra(object):
         
         return [t,sol[:,0], sol[:,1]]
     
-    def generate_measurements(self,sigma_prey=5,sigma_hunter=1,p_0=5000,h_0=10,alpha = 1.0,beta = 0.1,gamma = 0.1,delta = 0.0001, T=24.5,dt=0.25):
+    def generate_measurements(self,sigma_prey=5,sigma_hunter=1,bias_prey=0,bias_hunter=0, p_0=5000,h_0=10,alpha = 1.0,beta = 0.1,gamma = 0.1,delta = 0.0001, T=24.5,dt=0.25):
     
         Y_0 = [p_0,h_0]
         t = np.linspace(0, T, int(np.round(T/dt)))
@@ -44,11 +44,11 @@ class LotkaVolterra(object):
         sol = odeint(self.Lotka_Volterra_ode,Y_0,t, args=(alpha,beta,gamma,delta))
         
         prey = sol[:,0] 
-        prey_noise = np.random.normal(0.0, sigma_prey, size = prey.shape)
+        prey_noise = np.random.normal(bias_prey, sigma_prey, size = prey.shape)
         prey_measurement = prey + prey_noise
     
         hunter = sol[:,1] 
-        hunter_noise = np.random.normal(0.0, sigma_hunter, size = hunter.shape)
+        hunter_noise = np.random.normal(bias_hunter, sigma_hunter, size = hunter.shape)
         hunter_measurement = hunter + hunter_noise
         
         return [t,prey, hunter, prey_measurement, hunter_measurement]
