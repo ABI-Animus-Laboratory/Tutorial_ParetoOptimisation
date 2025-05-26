@@ -30,12 +30,6 @@ if __name__ == '__main__':
     sigma_prey=100.0
     sigma_hunter=3.0
     
-    #    Measurements generation
-    model = LotkaVolterra()
-    t,prey, hunter, prey_measurement,hunter_measurement = model.generate_measurements(sigma_prey=sigma_prey,sigma_hunter=sigma_hunter,p_0=p_0,h_0=h_0,alpha=alpha_gt,beta=beta_gt,gamma=gamma_gt,delta=delta_gt,T=T,dt=dt)
-    # model.plot_prey_hunter_measurements(t, prey, hunter, prey_measurement, hunter_measurement)
-    theta_names = ['beta','delta']
-    
     #    Calibrate model
     def F(theta,alpha, gamma, p_0, h_0,model,prey_measurement,hunter_measurement):
         beta,delta = theta
@@ -43,6 +37,12 @@ if __name__ == '__main__':
         t,prey,hunter = model.predict(p_0,h_0,alpha,beta,gamma,delta,T,dt)
         
         return np.square(np.subtract(prey,prey_measurement)).sum() + np.square(np.subtract(hunter,hunter_measurement)).sum()  
+    
+    #    Measurements generation
+    model = LotkaVolterra()
+    t,prey, hunter, prey_measurement,hunter_measurement = model.generate_measurements(sigma_prey=sigma_prey,sigma_hunter=sigma_hunter,p_0=p_0,h_0=h_0,alpha=alpha_gt,beta=beta_gt,gamma=gamma_gt,delta=delta_gt,T=T,dt=dt)
+    # model.plot_prey_hunter_measurements(t, prey, hunter, prey_measurement, hunter_measurement)
+    theta_names = ['beta','delta']
          
     res = minimize(F, [1E-2,1E-2], args=(alpha_gt,gamma_gt,p_0,h_0,model,prey_measurement,hunter_measurement), method='L-BFGS-B',
                    options={'disp': True, 'gtol':1E-8, 'maxls':50})
@@ -80,6 +80,7 @@ if __name__ == '__main__':
     min_factor = 0.1
     max_factor = 5
     
+    
     #    Modified objective function for profile likelihood
     def F_likelihood(theta, alpha, gamma, p_0, h_0,model,prey_measurement,hunter_measurement, param_idx, current_value):
         theta_full = np.insert(theta,param_idx,current_value)
@@ -106,7 +107,7 @@ if __name__ == '__main__':
             profiles[param_idx,idx_sample] = res.fun
             # print(res)
     
-    print(profiles)
+    # print(profiles)
     
     #    Print profiles
     plt.figure(figsize=(10, 5))
